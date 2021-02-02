@@ -21,7 +21,7 @@ from replicate.exceptions import (
 from replicate.experiment import Experiment, ExperimentList
 from replicate.project import Project
 from replicate.heartbeat import DEFAULT_REFRESH_INTERVAL
-from replicate.constants import HEARTBEAT_MISS_TOLERANCE
+from replicate.constants import HEARTBEAT_MISS_TOLERANCE, EXPERIMENT_STATUS_STOPPED
 from replicate.metadata import rfc3339_datetime
 from tests.factories import experiment_factory, checkpoint_factory
 
@@ -564,13 +564,19 @@ class TestExperimentList:
                 ),
             ]
         )
-
+        print(experiment_list._repr_html_())
         assert (
             experiment_list._repr_html_()
-            == """
-<table><tr><th>id</th><th>created</th><th>params</th><th>latest_checkpoint</th><th>best_checkpoint</th></tr>
-<tr><th>e1</th><th>2020-01-01 01:01:01</th><th>None</th><th>c2 (loss: 0.2)</th><th>c1 (loss: 0.1)</th></tr>
-<tr><th>e2</th><th>2020-01-01 01:01:01</th><th>None</th><th>c4 (loss: 0.1)</th><th>c4 (loss: 0.1)</th></tr></table>""".strip().replace(
-                "\n", ""
+            == (
+                """
+<table><tr><th>id</th><th>status</th><th>created</th><th>params</th><th>latest_checkpoint</th><th>best_checkpoint</th></tr>
+<tr><th>e1</th><th>"""
+                + EXPERIMENT_STATUS_STOPPED
+                + """</th><th>2020-01-01 01:01:01</th><th>None</th><th>c2 (loss: 0.2)</th><th>c1 (loss: 0.1)</th></tr>
+<tr><th>e2</th><th>"""
+                + EXPERIMENT_STATUS_STOPPED
+                + """</th><th>2020-01-01 01:01:01</th><th>None</th><th>c4 (loss: 0.1)</th><th>c4 (loss: 0.1)</th></tr></table>"""
             )
+            .strip()
+            .replace("\n", "")
         )

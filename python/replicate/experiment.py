@@ -74,6 +74,17 @@ class Experiment:
     def short_id(self):
         return self.id[:7]
 
+    def get_status(self) -> str:
+        """
+        Returns the status of the experiment
+        """
+        status = (
+            EXPERIMENT_STATUS_RUNNING
+            if self.is_running()
+            else EXPERIMENT_STATUS_STOPPED
+        )
+        return status
+
     def validate(self) -> List[str]:
         errors = []
 
@@ -692,7 +703,7 @@ class ExperimentList(list, MutableSequence[Experiment]):
                 return "{} ({})".format(checkpoint.short_id(), "; ".join(parens))
             return checkpoint.short_id()
 
-        headings = ["id", "created"]
+        headings = ["id", "status", "created"]
         if show_user:
             headings.append("user")
         if show_host:
@@ -712,6 +723,8 @@ class ExperimentList(list, MutableSequence[Experiment]):
                     d = format_checkpoint(experiment.latest())
                 elif h == "best_checkpoint":
                     d = format_checkpoint(experiment.best())
+                elif h == "status":
+                    d = experiment.get_status()
                 else:
                     d = getattr(experiment, h)
                     d = str(d)
